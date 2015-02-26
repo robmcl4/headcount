@@ -1,6 +1,9 @@
 extends layout
 
 block content
-  h1 foobar
-  p Welcome to #{title}
+  h1 Welcome, enter a headcount
+  form(action='headcount', method='post')
+    div(class='form-group')
+      label(for='howMany') How Many People?
+      input(type='number', class='form-control', id='howMany', name='howMany', placeholder='How Many')
   p There are #{count} rows in the db
