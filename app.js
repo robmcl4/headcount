@@ -4,6 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var dotenv = require('dotenv');
+var pg = require('pg');
+dotenv.load();
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -56,5 +59,11 @@ app.use(function(err, req, res, next) {
     });
 });
 
+// set up the database connection
+pg.defaults.user     = process.env.PSQL_USER;
+pg.defaults.password = process.env.PSQL_PASS;
+pg.defaults.database = process.env.PSQL_DB;
+pg.defaults.host     = process.env.PSQL_HOST;
+pg.defaults.port     = process.env.PSQL_PORT;
 
 module.exports = app;
