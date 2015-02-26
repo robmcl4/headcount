@@ -1,17 +1,17 @@
 var express = require('express');
 var router = express.Router();
-var pg = require('pg');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  pg.connect(function(err, client, done) {
+  req.models.headcount.count(function (err, status) {
     if (err) {
-      res.status(500).send('Database connection error');
+      res.status(500).send('Something broke!' + err)
+    } else {
+      res.render('index', {
+        title: 'Express',
+        count: status
+      });
     }
-    else {
-      res.render('index', { title: 'Express' });
-    }
-    done();
   })
 });
 
