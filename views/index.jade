@@ -1,9 +1,17 @@
 extends layout
 
 block content
-  h1 Welcome, enter a headcount
-  form(action='headcount', method='post')
-    div(class='form-group')
-      label(for='howMany') How Many People?
-      input(type='number', class='form-control', id='howMany', name='howMany', placeholder='How Many')
-  p There are #{count} rows in the db
+  div(class='container')
+    h1 Welcome, enter a headcount
+    form(action='headcount', method='post')
+      div(class='form-group')
+        label(for='howMany') How Many People?
+        input(type='number', class='form-control', id='howMany', name='howMany', placeholder='How Many')
+    h3 Recent Headcounts
+    table(class='table table-striped', ng-controller='recentHeadcount')
+      th
+        td Date / Time
+        td Count
+      tr(ng-repeat='headcount in headcounts')
+        td {{headcount.date | date:'short'}}
+        td {{headcount.number}}

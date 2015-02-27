@@ -1,11 +1,15 @@
 doctype html
-html
+html(ng-app='headcountApp')
   head
     title= title
+    meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css')
     link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js')
     script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')
-  body
+    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js')
+    script(src='/javascripts/controllers.js')
+  body(lang='en')
     block content
