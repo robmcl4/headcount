@@ -9,9 +9,11 @@ block content
         input(type='number', class='form-control', id='howMany', name='howMany', placeholder='How Many')
     h3 Recent Headcounts
     table(class='table table-striped', ng-controller='recentHeadcount')
-      th
-        td Date / Time
-        td Count
-      tr(ng-repeat='headcount in headcounts')
-        td {{headcount.date | date:'short'}}
-        td {{headcount.number}}
+      thead
+        tr
+          th Date / Time
+          th Count
+      tbody
+        tr(ng-repeat='headcount in headcounts')
+          td {{headcount.ts | date:'short'}}
+          td {{headcount.how_many}}

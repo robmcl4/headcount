@@ -7,7 +7,7 @@ router.get('/headcount/recent', function(req, res, next) {
   req.models.headcount.find(['ts', 'Z'], limit, function(err, headcounts) {
     if (err)
       next(err);
-    else
+    else 
       res.json(headcounts);
   });
 });
