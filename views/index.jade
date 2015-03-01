@@ -5,8 +5,15 @@ block content
     h1 Welcome, enter a headcount
     form(action='headcount', method='post')
       div(class='form-group')
-        label(for='howMany') How Many People?
-        input(type='number', class='form-control', id='howMany', name='howMany', placeholder='How Many')
+        label(for='howMany') How many people?
+        input(type='number', class='form-control', id='howManyInput', name='howMany', placeholder='How Many', autofocus)
+      div(class='form-group')
+        label(for='when') When was the count taken?
+        div(class='input-group date', id='datetimePickerWhen')
+          input(type='text', class='form-control')
+          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+          </span>
+      input(type='submit', value='Submit', class='btn btn-primary')
     h3 Recent Headcounts
     table(class='table table-striped', ng-controller='recentHeadcount')
       thead

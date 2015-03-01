@@ -1,7 +1,7 @@
 var headcountApp = angular.module('headcountApp', []);
 
 
-headcountApp.controller('recentHeadcount', function($scope, $http) {
+headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, $http) {
   $scope.headcounts = [];
   $http({
     method: 'GET',
@@ -12,4 +12,5 @@ headcountApp.controller('recentHeadcount', function($scope, $http) {
   }).error(function(data, status) {
     console.error('Error occurred: ' + status);
   });
-});
+  $('#datetimePickerWhen').datetimepicker();
+}]);
