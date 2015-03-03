@@ -3,18 +3,35 @@ extends layout
 block content
   div(class='container')
     h1 Welcome, enter a headcount
-    form(action='headcount', method='post')
-      div(class='form-group')
-        label(for='howMany') How many people?
-        input(type='number', class='form-control', id='howManyInput', name='howMany', placeholder='How Many', autofocus)
-      div(class='form-group')
-        label(for='when') When was the count taken?
-        div(class='input-group date', id='datetimePickerWhen')
-          input(type='text', class='form-control')
-          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-          </span>
-      input(type='submit', value='Submit', class='btn btn-primary')
+    hr
+    div(class='row')
+      div(class='col-lg-6')
+        form(ng-submit='submit()', ng-controller='enterHeadcount')
+          div(class='form-group')
+            label(for='howMany') How many people?
+            input(type='number',
+                  class='form-control',
+                  id='howManyInput',
+                  name='howMany',
+                  placeholder='How Many',
+                  ng-model='howMany',
+                  required,
+                  autofocus)
+          div(class='form-group')
+            label(for='when') When was the count taken?
+            div(class='input-group date', datetime-picker-rounded)
+              input(type='text',
+                    class='form-control',
+                    name='when',
+                    ng-model='when',
+                    id='whenInput',
+                    required)
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+              </span>
+          div(class='form-group')
+            input(type='submit', value='Submit', class='btn btn-primary col-md-2 col-sm-2 col-xs-12')
     h3 Recent Headcounts
+    hr
     table(class='table table-striped', ng-controller='recentHeadcount')
       thead
         tr
