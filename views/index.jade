@@ -19,15 +19,7 @@ block content
                   autofocus)
           div(class='form-group')
             label(for='when') When was the count taken?
-            div(class='input-group date', datetime-picker-rounded)
-              input(type='text',
-                    class='form-control',
-                    name='when',
-                    ng-model='when',
-                    id='whenInput',
-                    required)
-              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-              </span>
+            datetime-picker-rounded(picker-model='when')
           div(class='form-group')
             input(type='submit', value='Submit', class='btn btn-primary col-md-2 col-sm-2 col-xs-12')
     h3 Recent Headcounts

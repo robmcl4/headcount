@@ -1,4 +1,4 @@
-var headcountApp = angular.module('headcountApp', ['angularMoment']);
+var headcountApp = angular.module('headcountApp', []);
 
 
 headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, $http) {
@@ -18,22 +18,39 @@ headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, 
 headcountApp.controller('enterHeadcount', function($scope) {
   var now = moment();
   now.minutes(Math.round(now.minutes()/30)*30);
+  now.seconds(0);
+  now.milliseconds(0);
   $scope.when = now;
 
   $scope.submit = function() {
-    console.log('Submitting!');
+    $scope.when = 'foobar';
   }
 
 });
 
 headcountApp.directive('datetimePickerRounded', function() {
   return {
-    restrict: 'A',
+    restrict: 'E',
+    templateUrl: '/templates/datetime-picker.html',
+    replace: true,
     link: function(scope, element, attrs) {
-      var model = $(element).find('input').attr('ng-model');
-      var default_ = scope[model];
-      $(element).datetimepicker({defaultDate: default_});
-      scope[model] = $(element).find('input').val();
+      var defaultDate = scope[attrs.pickerModel];
+      var format = 'MM/DD/YYYY hh:mm A'; 
+      $(element).datetimepicker({
+        format: format,
+        defaultDate: defaultDate
+      })
+      .find('input').val(defaultDate.format(format));
+
+      scope.$watch(attrs.pickerModel, function(old, new_) {
+        element.find('input').val(new_.format(format));
+        return new_;
+      })
+      element.on('input dp.change', function() {
+        scope.$apply(function() {
+          scope[attrs.pickerModel] = element.data('DateTimePicker').date();
+        })
+      });
     }
   }
-})
+});
