@@ -1,7 +1,7 @@
 var headcountApp = angular.module('headcountApp', []);
 
 
-headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, $http) {
+headcountApp.controller('headcount-controller', ['$scope', '$http', function($scope, $http) {
   $scope.headcounts = [];
   $http({
     method: 'GET',
@@ -9,13 +9,9 @@ headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, 
   }).success(function(data, status) {
     $scope.headcounts = data;
   }).error(function(data, status) {
-    console.error('Error occurred: ' + status);
+    console.error('Error occurred: ' + data);
   });
 
-}]);
-
-
-headcountApp.controller('enterHeadcount', ['$scope', '$http', function($scope, $http) {
   var now = moment();
   now.minutes(Math.round(now.minutes()/30)*30);
   now.seconds(0);
@@ -32,17 +28,23 @@ headcountApp.controller('enterHeadcount', ['$scope', '$http', function($scope, $
       how_many: $scope.how_many
     };
     var start = +(new Date());
+
     function done() {
       var end = +(new Date());
       setTimeout(function() {
         $scope.$apply(function() {
+          $scope.headcounts.unshift({
+            ts: new Date(msg.ts),
+            how_many: msg.how_many
+          });
+          console.log($scope);
           $scope.submitting = false;
         });
       }, Math.max(end-start, 1000));
     }
+
     $http.post('/api/headcount', msg)
       .success(function() {
-        console.log('Submitted successfully');
         done();
       })
       .error(function(data, status) {

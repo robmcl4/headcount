@@ -1,12 +1,12 @@
 extends layout
 
 block content
-  div(class='container')
+  div(class='container' ng-controller='headcount-controller')
     h1 Welcome, enter a headcount
     hr
     div(class='row')
       div(class='col-lg-6')
-        form(ng-submit='submit()', ng-controller='enterHeadcount')
+        form(ng-submit='submit()')
           div(class='form-group')
             label(for='howMany') How many people?
             input(type='number',
@@ -34,12 +34,12 @@ block content
                 <div class="rect5"></div>
     h3 Recent Headcounts
     hr
-    table(class='table table-striped', ng-controller='recentHeadcount')
+    table(class='table table-striped')
       thead
         tr
           th Date / Time
           th Count
-      tbody
+      tbody()
         tr(ng-repeat='headcount in headcounts')
           td {{headcount.ts | date:'short'}}
           td {{headcount.how_many}}
