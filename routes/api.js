@@ -7,7 +7,7 @@ router.get('/headcount/recent', function(req, res, next) {
   req.models.headcount.find(['ts', 'Z'], limit, function(err, headcounts) {
     if (err)
       next(err);
-    else 
+    else
       res.json(headcounts);
   });
 });
@@ -21,13 +21,13 @@ router.post('/headcount', function(req, res, next) {
     next('Parameters missing');
   }
   else {
-    var newHeadcount = {how_many: how_many, ts: new Date(ts)};
+    var newHeadcount = {how_many: how_many, ts: ts};
     req.models.headcount.create(newHeadcount, function(err, result) {
       if (err) {
         next(err);
       }
       else {
-        res.json({foo: 'bar'}); 
+        res.json();
       }
     });
   }
