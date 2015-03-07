@@ -31,12 +31,14 @@ headcountApp.controller('enterHeadcount', ['$scope', '$http', function($scope, $
       ts: $scope.when.utc().format(),
       how_many: $scope.how_many
     };
+    var start = +(new Date());
     function done() {
+      var end = +(new Date());
       setTimeout(function() {
         $scope.$apply(function() {
           $scope.submitting = false;
         });
-      }, 2000);
+      }, Math.max(end-start, 1000));
     }
     $http.post('/api/headcount', msg)
       .success(function() {
