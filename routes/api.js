@@ -15,7 +15,22 @@ router.get('/headcount/recent', function(req, res, next) {
 
 /* POST /api/headcount */
 router.post('/headcount', function(req, res, next) {
-
+  var how_many = req.body.how_many;
+  var ts = req.body.ts;
+  if (how_many === undefined || ts === undefined) {
+    next('Parameters missing');
+  }
+  else {
+    var newHeadcount = {how_many: how_many, ts: new Date(ts)};
+    req.models.headcount.create(newHeadcount, function(err, result) {
+      if (err) {
+        next(err);
+      }
+      else {
+        res.json({foo: 'bar'}); 
+      }
+    });
+  }
 });
 
 module.exports = router;

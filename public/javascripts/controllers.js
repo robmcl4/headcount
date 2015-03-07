@@ -15,18 +15,43 @@ headcountApp.controller('recentHeadcount', ['$scope', '$http', function($scope, 
 }]);
 
 
-headcountApp.controller('enterHeadcount', function($scope) {
+headcountApp.controller('enterHeadcount', ['$scope', '$http', function($scope, $http) {
   var now = moment();
   now.minutes(Math.round(now.minutes()/30)*30);
   now.seconds(0);
   now.milliseconds(0);
   $scope.when = now;
+  $scope.how_many = null;
 
   $scope.submit = function() {
-    $scope.when = 'foobar';
+    if ($scope.submitting) return;
+    $scope.submitting = true;
+
+    var msg = {
+      ts: $scope.when.utc().format(),
+      how_many: $scope.how_many
+    };
+    function done() {
+      setTimeout(function() {
+        $scope.$apply(function() {
+          $scope.submitting = false;
+        });
+      }, 2000);
+    }
+    $http.post('/api/headcount', msg)
+      .success(function() {
+        console.log('Submitted successfully');
+        done();
+      })
+      .error(function(data, status) {
+        console.error('Error occurred in submitting headcount');
+        console.error(data);
+        console.error(status);
+        done();
+      });
   }
 
-});
+}]);
 
 headcountApp.directive('datetimePickerRounded', function() {
   return {
