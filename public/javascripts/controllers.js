@@ -5,7 +5,7 @@ headcountApp.controller('headcount-controller', ['$scope', '$http', function($sc
   $scope.headcounts = [];
   $http({
     method: 'GET',
-    url: '/api/headcount/recent'
+    url: '/api/headcount/recent?limit=5',
   }).success(function(data, status) {
     $scope.headcounts = data;
   }).error(function(data, status) {
@@ -37,7 +37,7 @@ headcountApp.controller('headcount-controller', ['$scope', '$http', function($sc
             ts: new Date(msg.ts),
             how_many: msg.how_many
           });
-          console.log($scope);
+          $scope.headcounts.pop();
           $scope.submitting = false;
         });
       }, Math.max(end-start, 1000));
