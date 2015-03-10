@@ -33,4 +33,37 @@ router.post('/headcount', function(req, res, next) {
   }
 });
 
+
+/* GET /api/headcount/day_summary?day={mon, tues, wed, thur, fri, sat, sun} */
+router.get('/headcount/day_summary', function(req, res, next) {
+  var day = parseInt(req.query.day);
+
+  if (day === undefined) {
+    next('Parameters missing or malformed');
+  } else {
+
+    req.db.driver.execQuery(
+      'SELECT '
+      + 'EXTRACT(HOUR FROM ts) AS hour, '
+      + 'AVG(how_many), '
+      + 'STDDEV(how_many)'
+      + 'FROM headcount WHERE EXTRACT(DOW FROM ts) = ? GROUP BY hour',
+      day + '',
+      function(err, result) {
+        if (err)
+          next(err);
+        else {
+          for (var i=0; i < result.length; i++) {
+            result[i] = {
+              hour: result[i].hour,
+              avg: parseFloat(result[i].avg),
+              stddev: parseFloat(result[i].stddev)
+            }
+          }
+          res.json(result);
+        }
+    });
+  }
+});
+
 module.exports = router;

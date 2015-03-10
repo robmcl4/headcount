@@ -1,45 +1,12 @@
 extends layout
 
 block content
-  div(class='container' ng-controller='headcount-controller')
-    h1 Welcome, enter a headcount
-    hr
-    div(class='row')
-      div(class='col-lg-6')
-        form(ng-submit='submit()')
-          div(class='form-group')
-            label(for='howMany') How many people?
-            input(type='number',
-                  class='form-control',
-                  id='howManyInput',
-                  name='howMany',
-                  placeholder='How Many',
-                  ng-model='how_many',
-                  required,
-                  autofocus)
-          div(class='form-group')
-            label(for='when') When was the count taken?
-            datetime-picker-rounded(picker-model='when')
-          div(class='form-group')
-            button(type='submit',
-                   value='Submit',
-                   class='btn btn-primary col-md-2 col-sm-2 col-xs-12'
-                  )
-              span(ng-hide='submitting') Submit
-              div(class='spinner', ng-show='submitting')
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-    h3 Recent Headcounts
-    hr
-    table(class='table table-striped')
-      thead
-        tr
-          th Date / Time
-          th Count
-      tbody()
-        tr(ng-repeat='headcount in headcounts')
-          td {{headcount.ts | date:'short'}}
-          td {{headcount.how_many}}
+  div(class='container')
+    div(class='navigation')
+      a(href='#/')
+        div(class='nav-item')
+          span(class='glyphicon glyphicon-home')
+      a(href='#/charts')
+        div(class='nav-item')
+          span(class='glyphicon glyphicon-stats')
+    div(ng-view)

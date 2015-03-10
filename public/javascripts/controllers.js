@@ -1,7 +1,7 @@
-var headcountApp = angular.module('headcountApp', []);
+var headcountControllers = angular.module('headcountControllers', []);
 
 
-headcountApp.controller('headcount-controller', ['$scope', '$http', function($scope, $http) {
+headcountControllers.controller('headcountMainPage', ['$scope', '$http', function($scope, $http) {
   $scope.headcounts = [];
   $http({
     method: 'GET',
@@ -57,7 +57,13 @@ headcountApp.controller('headcount-controller', ['$scope', '$http', function($sc
 
 }]);
 
-headcountApp.directive('datetimePickerRounded', function() {
+headcountControllers.controller('headcountCharts',
+  ['$scope', '$http', function($scope, $http) {
+    
+  }
+]);
+
+headcountControllers.directive('datetimePickerRounded', function() {
   return {
     restrict: 'E',
     templateUrl: '/templates/datetime-picker.html',
