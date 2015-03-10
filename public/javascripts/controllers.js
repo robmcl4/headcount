@@ -59,7 +59,28 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
 
 headcountControllers.controller('headcountCharts',
   ['$scope', '$http', function($scope, $http) {
-    
+    $scope.whichDay = 0;
+
+    $scope.updateDailySummary = function() {
+      $http.get('/api/headcount/day_summary?day=' + $scope.whichDay)
+      .success(function(data, status) {
+        charts.drawDailyGraph(data, '#daily-graph');
+      })
+      .error(function(data, success) {
+        console.error('Error occurred in getting summary data');
+        console.error(data);
+      });
+    }
+
+    $scope.watch('whichDay', function(name, old, new_) {
+      if (old !== new_) {
+        $scope.updateDailySummary()
+      }
+      console.log(old, new_);
+      return new_;
+    });
+
+    $scope.updateDailySummary();
   }
 ]);
 

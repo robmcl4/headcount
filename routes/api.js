@@ -47,7 +47,7 @@ router.get('/headcount/day_summary', function(req, res, next) {
       + 'EXTRACT(HOUR FROM ts) AS hour, '
       + 'AVG(how_many), '
       + 'STDDEV(how_many)'
-      + 'FROM headcount WHERE EXTRACT(DOW FROM ts) = ? GROUP BY hour',
+      + 'FROM headcount WHERE EXTRACT(DOW FROM ts) = ? GROUP BY hour ORDER BY hour',
       day + '',
       function(err, result) {
         if (err)
