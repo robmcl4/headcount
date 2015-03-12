@@ -17,11 +17,12 @@ router.get('/headcount/recent', function(req, res, next) {
 router.post('/headcount', function(req, res, next) {
   var how_many = req.body.how_many;
   var ts = req.body.ts;
-  if (how_many === undefined || ts === undefined) {
+  var initials = req.body.initials;
+  if (how_many === undefined || ts === undefined || initials === undefined) {
     next('Parameters missing');
   }
   else {
-    var newHeadcount = {how_many: how_many, ts: ts};
+    var newHeadcount = {how_many: how_many, initials: initials, ts: ts};
     req.models.headcount.create(newHeadcount, function(err, result) {
       if (err) {
         next(err);

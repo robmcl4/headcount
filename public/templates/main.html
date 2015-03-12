@@ -15,6 +15,15 @@
               autofocus>
       </div>
       <div class='form-group'>
+        <label for='initials'>What are your initials?</label>
+        <input type='text'
+               class='form-control'
+               name='initials'
+               placeholder='Initials'
+               ng-model='initials'
+               required>
+      </div>
+      <div class='form-group'>
         <label for='when'>When was the count taken?</label>
         <datetime-picker-rounded picker-model='when' />
       </div>
@@ -41,12 +50,14 @@
   <thead>
     <tr>
       <th>Date / Time</th>
+      <th>Initials</th>
       <th>Count</th>
     </tr>
   </thead>
   <tbody>
     <tr ng-repeat='headcount in headcounts'>
       <td>{{headcount.ts | date:'short'}}</td>
+      <td>{{headcount.initials}}</td>
       <td>{{headcount.how_many}}</td>
     </tr>
   </tbody>

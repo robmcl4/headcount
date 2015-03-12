@@ -25,6 +25,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
 
     var msg = {
       ts: $scope.when.utc().format(),
+      initials: $scope.initials,
       how_many: $scope.how_many
     };
     var start = +(new Date());
@@ -35,6 +36,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
         $scope.$apply(function() {
           $scope.headcounts.unshift({
             ts: new Date(msg.ts),
+            initials: msg.initials,
             how_many: msg.how_many
           });
           $scope.headcounts.pop();
