@@ -25,11 +25,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(orm.express('postgresql://' +
+app.use(orm.express(
+          process.env.DATABASE_URL || ('postgresql://' +
           process.env.PSQL_USER + ':' +
           process.env.PSQL_PASS + '@' +
           process.env.PSQL_HOST + '/' +
-          process.env.PSQL_DB +
+          process.env.PSQL_DB) +
           '?pool=true',
           {
             define: function(db, models, next) {
