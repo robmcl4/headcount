@@ -96,7 +96,9 @@ headcountControllers.directive('datetimePickerRounded', function() {
     replace: true,
     link: function(scope, element, attrs) {
       var defaultDate = scope[attrs.pickerModel];
-      var format = 'MM/DD/YYYY hh:mm A'; 
+      var format = 'MM/DD/YYYY hh:mm A';
+      var pattern = /\d{2}\/\d{2}\/\d{4} \d{2}:\d{2} (AM|PM)/i;
+
       $(element).datetimepicker({
         format: format,
         defaultDate: defaultDate
@@ -104,12 +106,28 @@ headcountControllers.directive('datetimePickerRounded', function() {
       .find('input').val(defaultDate.format(format));
 
       scope.$watch(attrs.pickerModel, function(new_) {
-        element.find('input').val(new_.format(format));
+        if (!new_.isValid()) {
+          if (new_._i)
+            element.find('input').val(new_._i);
+        } else {
+          element.find('input').val(new_.format(format));
+        }
         return new_;
       })
-      element.on('input dp.change', function() {
+      element.on('dp.change', function() {
         scope.$apply(function() {
           scope[attrs.pickerModel] = element.data('DateTimePicker').date();
+        })
+      });
+      element.on('input', function() {
+        scope.$apply(function() {
+          var val = element.find('input').val();
+          var parsed = moment(val, format, true);
+          if (!val.match(pattern)) {
+            parsed = moment.invalid()
+            parsed._i = val;
+          }
+          scope[attrs.pickerModel] = parsed;
         })
       });
     }
