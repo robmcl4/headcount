@@ -2,10 +2,12 @@ var headcountControllers = angular.module('headcountControllers', []);
 
 
 headcountControllers.controller('headcountMainPage', ['$scope', '$http', function($scope, $http) {
+  var recentCountLimit = 5;
+
   $scope.headcounts = [];
   $http({
     method: 'GET',
-    url: '/api/headcount/recent?limit=5',
+    url: '/api/headcount/recent?limit=' + recentCountLimit,
   }).success(function(data, status) {
     $scope.headcounts = data;
   }).error(function(data, status) {
@@ -39,7 +41,9 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
             initials: msg.initials,
             how_many: msg.how_many
           });
-          $scope.headcounts.pop();
+          if ($scope.headcounts.length > recentCountLimit) {
+            $scope.headcounts.pop();
+          }
           $scope.submitting = false;
         });
       }, Math.max(end-start, 1000));
