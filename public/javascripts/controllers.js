@@ -26,7 +26,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
     $scope.submitting = true;
 
     var msg = {
-      ts: $scope.when.utc().format(),
+      ts: $scope.when.format(),
       initials: $scope.initials,
       how_many: $scope.how_many
     };
