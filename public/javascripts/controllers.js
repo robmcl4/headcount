@@ -99,7 +99,7 @@ headcountControllers.directive('datetimePickerRounded', function() {
       })
       .find('input').val(defaultDate.format(format));
 
-      scope.$watch(attrs.pickerModel, function(old, new_) {
+      scope.$watch(attrs.pickerModel, function(elemName, old, new_) {
         element.find('input').val(new_.format(format));
         return new_;
       })
