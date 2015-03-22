@@ -1,4 +1,5 @@
 var express = require('express');
+var moment = require('moment');
 var router = express.Router();
 
 /* GET /api/headcount/recent */
@@ -7,8 +8,12 @@ router.get('/headcount/recent', function(req, res, next) {
   req.models.headcount.find(['-ts', '-id'], limit, function(err, headcounts) {
     if (err)
       next(err);
-    else
+    else {
+      headcounts.forEach(function(e) {
+        e.ts = moment(e.ts).format('YYYY-MM-DDTHH:mm');
+      });
       res.json(headcounts);
+    }
   });
 });
 
