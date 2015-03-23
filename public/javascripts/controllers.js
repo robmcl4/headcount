@@ -9,6 +9,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
         method: 'GET',
         url: '/api/headcount/recent?limit=' + recentCountLimit,
     }).success(function (data, status) {
+        data.forEach(function(x) {x.ts = new Date(x.ts)});
         $scope.headcounts = data;
     }).error(function (data, status) {
         console.error('Error occurred: ' + data);
@@ -41,6 +42,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
                         initials: msg.initials,
                         how_many: msg.how_many
                     });
+                    $scope.headcounts.sort(function(a, b) {return b.ts - a.ts;});
                     if ($scope.headcounts.length > recentCountLimit) {
                         $scope.headcounts.pop();
                     }
