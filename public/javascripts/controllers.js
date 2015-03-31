@@ -9,7 +9,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
         method: 'GET',
         url: '/api/headcount/recent?limit=' + recentCountLimit,
     }).success(function (data, status) {
-        data.forEach(function(x) {x.ts = new Date(x.ts)});
+        data.forEach(function(x) {x.ts = moment(x.ts)});
         $scope.headcounts = data;
     }).error(function (data, status) {
         console.error('Error occurred: ' + data);
@@ -38,7 +38,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
             setTimeout(function () {
                 $scope.$apply(function () {
                     $scope.headcounts.unshift({
-                        ts: new Date(msg.ts),
+                        ts: moment(msg.ts),
                         initials: msg.initials,
                         how_many: msg.how_many
                     });

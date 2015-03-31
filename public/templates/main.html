@@ -56,7 +56,7 @@
   </thead>
   <tbody>
     <tr ng-repeat='headcount in headcounts'>
-      <td>{{headcount.ts | date:'short'}}</td>
+      <td>{{headcount.ts.format('M/D/YYYY h:MM A')}}</td>
       <td>{{headcount.initials}}</td>
       <td>{{headcount.how_many}}</td>
     </tr>
