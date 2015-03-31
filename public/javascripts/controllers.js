@@ -121,7 +121,7 @@ headcountControllers.directive('datetimePickerRounded', function () {
                     scope[attrs.pickerModel] = element.data('DateTimePicker').date();
                 })
             });
-            element.on('input', function () {
+            element.on('change', function () {
                 scope.$apply(function () {
                     var val = element.find('input').val();
                     var parsed = moment(val, format, true);
