@@ -69,7 +69,7 @@ headcountControllers.controller('headcountCharts',
     ['$scope', '$http', function ($scope, $http) {
         $scope.whichDay = 0;
 
-        $scope.updateDailySummary = function (whichDay) {
+        $scope.updateDailySummary = function updateDailySummary(whichDay) {
             $http.get('/api/headcount/day_summary?day=' + whichDay)
                 .success(function (data, status) {
                     charts.drawDailyGraph(data, '#daily-graph');
@@ -80,7 +80,7 @@ headcountControllers.controller('headcountCharts',
                 });
         };
 
-        $scope.watch('whichDay', function (name, old, new_) {
+        $scope.$watch('whichDay', function (new_, old) {
             if (old !== new_) {
                 $scope.updateDailySummary(new_);
             }
