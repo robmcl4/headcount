@@ -1,4 +1,5 @@
 var express = require('express');
+var csv = require('express-csv');
 var moment = require('moment');
 var router = express.Router();
 
@@ -70,6 +71,23 @@ router.get('/headcount/day_summary', function(req, res, next) {
         }
     });
   }
+});
+
+router.get('/headcount.csv', function(req, res, next) {
+  req.models.headcount.all(function(err, result) {
+    if (err) {
+      next(err);
+    } else {
+      var ret = [["ID", "Date/Time", "Initials", "How Many"]];
+      result.forEach(function(e) {
+        ret.push([e.id,
+                  moment(e.ts).format('YYYY-MM-DDTHH:mm'),
+                  e.initials,
+                  e.how_many]);
+      });
+      res.csv(ret);
+    }
+  });
 });
 
 module.exports = router;
