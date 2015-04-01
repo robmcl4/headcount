@@ -67,7 +67,7 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
 
 headcountControllers.controller('headcountCharts',
     ['$scope', '$http', function ($scope, $http) {
-        $scope.whichDay = 0;
+        $scope.whichDay = 1;
 
         $scope.updateDailySummary = function updateDailySummary(whichDay) {
             $http.get('/api/headcount/day_summary?day=' + whichDay)

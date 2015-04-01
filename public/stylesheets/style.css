@@ -120,11 +120,11 @@ a:hover, a:focus {
 
 .line {
   fill: none;
-  stroke: steelblue;
+  stroke: #218359;
   stroke-width: 1.5px;
 }
 
 .area {
-  fill: lightsteelblue;
+  fill: #99F2CC;
   stroke-width: 0px;
 }
