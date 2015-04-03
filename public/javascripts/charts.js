@@ -47,13 +47,11 @@ window.charts = function () {
             var xDomain = d3.extent(data, function (d) {
                 return d.hour;
             });
-            var yDomain = d3.extent(data, function (d) {
-                return d.avg;
-            });
-            yDomain = [
-                yDomain[0] - 0.3 * (yDomain[1] - yDomain[0]),
-                yDomain[1] + 0.3 * (yDomain[1] - yDomain[0])
-            ];
+            var yDomain = [0, 32];
+            // yDomain = [
+            //     yDomain[0] - 0.3 * (yDomain[1] - yDomain[0]),
+            //     yDomain[1] + 0.3 * (yDomain[1] - yDomain[0])
+            // ];
             g.x.domain(xDomain);
             g.y.domain(yDomain);
 
