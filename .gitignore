@@ -29,3 +29,4 @@ node_modules
 .env
 
 public/vendor
+migrations/.migrate

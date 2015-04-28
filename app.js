@@ -8,7 +8,7 @@ var orm = require('orm');
 require('dotenv').load();
 
 var routes = require('./routes/index');
-var api = require('./routes/api');
+var headcount = require('./routes/api/headcount');
 var app_models = require('./models/index');
 
 var app = express();
@@ -41,7 +41,7 @@ app.use(orm.express(
 );
 
 app.use('/', routes);
-app.use('/api', api);
+app.use('/api/headcount', headcount);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

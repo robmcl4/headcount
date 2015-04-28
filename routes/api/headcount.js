@@ -4,7 +4,7 @@ var moment = require('moment');
 var router = express.Router();
 
 /* GET /api/headcount/recent */
-router.get('/headcount/recent', function(req, res, next) {
+router.get('/recent', function(req, res, next) {
   var limit = Math.max(Math.min(parseInt(req.query.limit) || 25, 25), 1);
   req.models.headcount.find(['-ts', '-id'], limit, function(err, headcounts) {
     if (err)
@@ -20,7 +20,7 @@ router.get('/headcount/recent', function(req, res, next) {
 
 
 /* POST /api/headcount */
-router.post('/headcount', function(req, res, next) {
+router.post('/', function(req, res, next) {
   var how_many = req.body.how_many;
   var ts = req.body.ts;
   var initials = req.body.initials;
@@ -42,7 +42,7 @@ router.post('/headcount', function(req, res, next) {
 
 
 /* GET /api/headcount/day_summary?day={mon, tues, wed, thur, fri, sat, sun} */
-router.get('/headcount/day_summary', function(req, res, next) {
+router.get('/day_summary', function(req, res, next) {
   var day = parseInt(req.query.day);
 
   if (day === undefined) {
