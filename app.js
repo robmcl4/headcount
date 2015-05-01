@@ -7,8 +7,6 @@ var bodyParser = require('body-parser');
 var orm = require('orm');
 require('dotenv').load();
 
-var routes = require('./routes/index');
-var headcount = require('./routes/api/headcount');
 var app_models = require('./models/index');
 
 var app = express();
@@ -40,8 +38,9 @@ app.use(orm.express(
           })
 );
 
-app.use('/', routes);
-app.use('/api/headcount', headcount);
+app.use('/', require('./routes/index'));
+app.use('/api/headcount', require('./routes/api/headcount'));
+app.use('/api/users', require('./routes/api/users'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -55,7 +54,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use('/', function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -66,11 +65,19 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use('/', function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
     error: {}
+  });
+});
+
+// API error handler
+app.use('/api', function(err, req, res, next) {
+  res.status(err.status || 200);
+  res.json({
+    message: err.message
   });
 });
 

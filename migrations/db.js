@@ -12,24 +12,24 @@ var conString = process.env.DATABASE_URL ||
 var client = new pg.Client(conString);
 
 exports.doQuery = function doQuery(str, success, failure) {
-  client.connect(function(err) {
+  pg.connect(conString, function(err, client, done) {
     if (err) {
       console.error('ERROR in connection');
       console.error(err);
       if (failure)
         failure(err);
-    } else {
-      client.query(str, function(err, result) {
-        if (err) {
-          console.error('ERROR in migration');
-          console.error(err);
-          if (failure)
-            failure(err);
-        } else {
-          client.end();
-          success();
-        }
-      });
+      return;
     }
+    client.query(str, function(err, result) {
+      done();
+      if (err) {
+        console.error('ERROR in migration');
+        console.error(err);
+        if (failure)
+          failure(err);
+        return;
+      }
+      success();
+    });
   });
 }
