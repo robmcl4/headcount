@@ -9,11 +9,22 @@ var conString = process.env.DATABASE_URL ||
                   process.env.PSQL_DB)        +
                 '?pool=true?timezone=UTC';
 
-var client = new pg.Client(conString);
+var testConString = null;
+if (process.env.TEST_DATABASE_URL || process.env.TEST_PSQL_USER) {
+  testConString = process.env.TEST_DATABASE_URL ||
+                  ('postgresql://'            +
+                  process.env.TEST_PSQL_USER + ':' +
+                  process.env.TEST_PSQL_PASS + '@' +
+                  process.env.TEST_PSQL_HOST + '/' +
+                  process.env.TEST_PSQL_DB)        +
+                '?pool=true?timezone=UTC';
+}
+
 
 exports.doQuery = function doQuery(str, success, failure) {
-  pg.connect(conString, function(err, client, done) {
+  var handler = function(err, client, done) {
     if (err) {
+      done();
       console.error('ERROR in connection');
       console.error(err);
       if (failure)
@@ -31,5 +42,10 @@ exports.doQuery = function doQuery(str, success, failure) {
       }
       success();
     });
-  });
+  };
+
+  pg.connect(conString, handler);
+  if (testConString) {
+    pg.connect(testConString, handler);
+  }
 }
