@@ -13,10 +13,10 @@ var testConString = null;
 if (process.env.TEST_DATABASE_URL || process.env.TEST_PSQL_USER) {
   testConString = process.env.TEST_DATABASE_URL ||
                   ('postgresql://'            +
-                  process.env.TEST_PSQL_USER + ':' +
-                  process.env.TEST_PSQL_PASS + '@' +
-                  process.env.TEST_PSQL_HOST + '/' +
-                  process.env.TEST_PSQL_DB)        +
+                  process.env.PSQL_TEST_USER + ':' +
+                  process.env.PSQL_TEST_PASS + '@' +
+                  process.env.PSQL_TEST_HOST + '/' +
+                  process.env.PSQL_TEST_DB)        +
                 '?pool=true?timezone=UTC';
 }
 
