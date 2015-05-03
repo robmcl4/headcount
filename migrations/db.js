@@ -17,7 +17,7 @@ if (process.env.TEST_DATABASE_URL || process.env.TEST_PSQL_USER) {
                   process.env.PSQL_TEST_PASS + '@' +
                   process.env.PSQL_TEST_HOST + '/' +
                   process.env.PSQL_TEST_DB)        +
-                '?pool=true?timezone=UTC';
+                '?pool=true&timezone=%2B00';
 }
 
 

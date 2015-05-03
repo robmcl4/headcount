@@ -4,7 +4,7 @@ var db = require('./db');
 exports.up = function(next) {
   db.doQuery('CREATE TABLE access_token (  \
     id      UUID PRIMARY KEY,              \
-    user_id INTEGER REFERENCES "user" (id), \
+    user_id INTEGER REFERENCES "user" (id),\
     expiry  TIMESTAMP                      \
     )', function() {
   db.doQuery('CREATE TABLE refresh_token (  \

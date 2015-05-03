@@ -41,7 +41,7 @@ describe('Headcount', function() {
       return new model({
         how_many: 2,
         initials: 'JF',
-        timestamp: Date()
+        ts: new Date()
       });
     }
 
@@ -68,7 +68,7 @@ describe('Headcount', function() {
           if (err)
             throw err;
           assert.equal(results.length, 1, 'should have found 1 mode');
-          assert.equal(results[0].ts, h.ts);
+          assert.deepEqual(results[0].ts, h.ts);
           done();
         });
 

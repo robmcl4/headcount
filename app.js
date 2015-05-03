@@ -29,7 +29,7 @@ app.use(orm.express(
           process.env.PSQL_PASS + '@' +
           process.env.PSQL_HOST + '/' +
           process.env.PSQL_DB) +
-          '?pool=true?timezone=UTC',
+          '?pool=true&timezone=%2B00',
           {
             define: function(db, models, next) {
               app_models.define(db, models);
