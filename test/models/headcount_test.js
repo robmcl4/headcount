@@ -1,6 +1,6 @@
-var db = require('../db');
-var assert = require('assert');
 var h = require('../helper');
+var db = h.db;
+var assert = require('assert');
 
 describe('Headcount', function() {
   var model = db.models.headcount;

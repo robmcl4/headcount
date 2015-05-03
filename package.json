@@ -9,20 +9,22 @@
   },
   "dependencies": {
     "body-parser": "~1.10.2",
+    "bower": "~1.3.12",
     "cookie-parser": "~1.3.3",
     "debug": "~2.1.1",
-    "express": "~4.11.1",
-    "jade": "~1.9.1",
-    "morgan": "~1.5.1",
-    "serve-favicon": "~2.2.0",
     "dotenv": "~0.5.1",
+    "expect": "^1.6.0",
+    "express": "~4.11.1",
+    "express-csv": "~0.6.0",
+    "jade": "~1.9.1",
+    "migrate": "~0.2.1",
+    "moment": "~2.9.0",
+    "morgan": "~1.5.1",
+    "node-uuid": "~1.4.3",
     "orm": "~2.1.22",
     "pg": "~4.3.0",
-    "bower": "~1.3.12",
-    "moment": "~2.9.0",
-    "express-csv": "~0.6.0",
-    "migrate": "~0.2.1",
-    "node-uuid": "~1.4.3",
-    "prompt": "~0.2.14"
+    "prompt": "~0.2.14",
+    "proxyquire": "^1.4.0",
+    "serve-favicon": "~2.2.0"
   }
 }

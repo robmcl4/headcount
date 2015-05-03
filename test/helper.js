@@ -1,4 +1,5 @@
 var db = require('./db');
+module.exports.db = db;
 var assert = require('assert');
 
 // Calculate model hierarchy, where the first in the
