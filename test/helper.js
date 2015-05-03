@@ -33,22 +33,30 @@ var sorted_models = function() {
     // if a can be found by b, then a should come first
     var aFinder = 'findBy' + capitalizeFirst(a[0]);
     if (b[1].hasOwnProperty(aFinder)) {
-      return 1;
+      return -1;
     }
     // if b can be found by a, then b should come first
     var bFinder = 'findBy' + capitalizeFirst(b[0]);
     if (a[1].hasOwnProperty(bFinder)) {
-      return -1;
+      return 1;
     }
     // otherwise it doesn't really matter
     return 0;
   }).map(function(e) {
-    return e[1];
+    return e;
   });
 }();
 
-beforeEach('truncate models', function() {
-  sorted_models.forEach(function(model) {
-    model.clear();
-  });
+beforeEach('truncate models', function(done) {
+  var to_delete = sorted_models.slice();
+  if (!to_delete) return;
+
+  function delete_func(err) {
+    if (err) throw err;
+    if (to_delete.length === 0)
+      return done();
+    var to_rm = to_delete.pop();
+    db.driver.execQuery('TRUNCATE TABLE "' + to_rm[1].table + '" CASCADE', delete_func);
+  }
+  delete_func();
 });

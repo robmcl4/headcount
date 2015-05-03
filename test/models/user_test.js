@@ -124,4 +124,43 @@ describe('user', function() {
 
   });
 
+  describe('persistance', function() {
+    it('should be able to save a user', function(done) {
+      u = new model({
+        username: "foobar",
+        is_admin: false
+      });
+      u.setPassword('foo', function() {
+        model.create(u, function(err, result) {
+          if (err) throw err;
+          expect(u.id).toExist();
+          done();
+        });
+      });
+    });
+
+    it('should load a user back with the same properties', function(done) {
+      var u = new model({
+        username: "foobar",
+        is_admin: false
+      });
+      u.setPassword('foo', function() {
+        model.create(u, function(err, result) {
+          if (err) throw err;
+
+          model.find({id: u.id}, function(err, result) {
+            if (err) throw err;
+
+            expect(result.length).toEqual(1);
+            expect(result.username).toEqual(model.username);
+            expect(result.hash).toEqual(model.hash);
+            expect(result.salt).toEqual(model.salt);
+            expect(result.is_admin).toEqual(model.is_admin);
+            done();
+          });
+        });
+      });
+    });
+  });
+
 });
