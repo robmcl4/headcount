@@ -26,13 +26,17 @@ describe('refresh_token', function() {
     var user = null;
 
     beforeEach('load a user', function(done) {
-      user = new db.models.user({
-        username: 'foobar',
-        is_admin: false
-      });
-      db.models.user.create(user, function(err, result) {
-        if (err) throw err;
-        done();
+      h.clearModel(db.models.refresh_token, function() {
+        h.clearModel(db.models.user, function() {
+          user = new db.models.user({
+            username: 'foobar',
+            is_admin: false
+          });
+          db.models.user.create(user, function(err, result) {
+            if (err) throw err;
+            done();
+          });          
+        });
       });
     });
 

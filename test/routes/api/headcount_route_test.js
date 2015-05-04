@@ -8,6 +8,13 @@ describe('/api/headcount', function() {
 
   describe('/recent', function() {
 
+    beforeEach('remove all old headcounts', function(done) {
+      h.clearModel(db.models.headcount, function(err) {
+        if (err) throw err;
+        done();
+      })
+    });
+
     it('should return an empty list when no headcounts exist', function(done) {
       request(app)
         .get('/api/headcount/recent')

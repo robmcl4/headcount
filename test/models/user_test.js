@@ -125,6 +125,14 @@ describe('user', function() {
   });
 
   describe('persistance', function() {
+
+    beforeEach('remove all old users', function(done) {
+      h.clearModel(db.models.user, function(err) {
+        if (err) throw err;
+        done();
+      });
+    });
+
     it('should be able to save a user', function(done) {
       u = new model({
         username: "foobar",
