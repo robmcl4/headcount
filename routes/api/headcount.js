@@ -10,8 +10,13 @@ router.get('/recent', function(req, res, next) {
     if (err)
       next(err);
     else {
-      headcounts.forEach(function(e) {
-        e.ts = moment(e.ts).format('YYYY-MM-DDTHH:mm');
+      headcounts = headcounts.map(function(e) {
+        return {
+          id: e.id,
+          initials: e.initials,
+          how_many: e.how_many,
+          ts: moment(e.ts).format('YYYY-MM-DDTHH:mm')
+        }
       });
       res.json(headcounts);
     }

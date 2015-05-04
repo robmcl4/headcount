@@ -27,3 +27,16 @@ module.exports = orm.connect(connStr, function(err, db) {
   if (err) throw err;
 });
 models.define(module.exports, module.exports.models);
+
+// create the stubbed express function
+module.exports.express = function() {
+  return orm.express(
+    connStr,
+    {
+      define: function(db, models_obj, next) {
+        models.define(db, models_obj);
+        next();
+      }
+    }
+  );
+}
