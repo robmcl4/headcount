@@ -30,10 +30,11 @@ router.post('/', function(req, res, next) {
   var ts = req.body.ts;
   var initials = req.body.initials;
   if (how_many === undefined || ts === undefined || initials === undefined) {
+    res.status(400);
     next('Parameters missing');
   }
   else {
-    var newHeadcount = {how_many: how_many, initials: initials, ts: ts};
+    var newHeadcount = {how_many: how_many, initials: initials, ts: moment(ts, 'YYYY-MM-DDTHH:mm').toDate()};
     req.models.headcount.create(newHeadcount, function(err, result) {
       if (err) {
         next(err);

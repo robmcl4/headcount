@@ -51,6 +51,16 @@ app.use(function(req, res, next) {
 
 // error handlers
 
+// API error handler
+app.use('/api', function(err, req, res, next) {
+  if (typeof(err) === 'string') {
+    err = {message: err};
+  }
+  res.json({
+    message: err.message
+  });
+});
+
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -73,12 +83,5 @@ app.use('/', function(err, req, res, next) {
   });
 });
 
-// API error handler
-app.use('/api', function(err, req, res, next) {
-  res.status(err.status || 200);
-  res.json({
-    message: err.message
-  });
-});
 
 module.exports = app;
