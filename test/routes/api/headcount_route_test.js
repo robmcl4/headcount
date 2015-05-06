@@ -115,4 +115,16 @@ describe('/api/headcount', function() {
 
   });
 
+  describe('GET /day_summary', function() {
+
+    it('describes the mean and std deviation of headcounts for a given day');
+
+  });
+
+  describe('GET /headcount.csv', function() {
+
+    it('downloads a CSV file of of the headcount data');
+
+  });
+
 });

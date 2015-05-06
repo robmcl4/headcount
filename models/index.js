@@ -56,15 +56,6 @@ function define(db, models) {
     }
   });
 
-
-  models.access_token = db.define('access_token', {
-    id      : {type: 'text'},
-    user_id : {type: 'integer'},
-    expiry  : {type: 'date', time: true}
-  })
-  .hasOne('user', models.user, { reverse: 'access_tokens' });
-
-
   models.refresh_token = db.define('refresh_token', {
     id      : {type: 'text'},
     user_id : {type: 'integer'}
