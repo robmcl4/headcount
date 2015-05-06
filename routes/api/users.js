@@ -39,7 +39,8 @@ router.post('/token', function(req, res, next) {
 
       var access_token_payload = JSON.stringify({
         user_id: user.id,
-        expiry: moment().add(6, 'hours').toISOString()
+        expiry: moment().add(6, 'hours').toISOString(),
+        is_admin: user.is_admin
       });
 
       // get random bytes for the IV

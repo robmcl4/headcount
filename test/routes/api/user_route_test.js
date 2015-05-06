@@ -132,6 +132,7 @@ describe('/api/users', function() {
                 var payload = decryptPayload(payload, new Buffer(iv, 'base64'));
                 expect(payload).toExist();
                 expect(payload.user_id).toEqual(user.id);
+                expect(payload.is_admin).toEqual(false);
                 expect(payload.expiry).toExist();
                 // expect an expiry in 6 hours
                 var expected_expiry = +moment().add(6, 'hours');
