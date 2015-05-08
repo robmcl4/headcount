@@ -58,7 +58,7 @@ app.use('/api', function(err, req, res, next) {
     err = {message: err};
   }
   res.json({
-    message: err.message
+    error: err.message
   });
 });
 

@@ -1,14 +1,9 @@
 var express = require('express');
 var uuid = require('node-uuid');
 var moment = require('moment');
-var crypto = require('crypto');
+var cryptoHelper = require('../../lib/crypto_helper');
+var helper = require('../helper');
 var router = express.Router();
-
-
-var private_key = process.env.PRIVATE_KEY || 'xoCyO5omMAg5BYMrGta3c5aTYs8i6rHSqDr5uoXhl5d9N22j3wuXjI30mCZW';
-var hmac_key = crypto.pbkdf2Sync(private_key, 'hmac', 10000, 128, 'sha256').toString('hex');
-var encrypt_key = crypto.pbkdf2Sync(private_key, 'encrypt_key', 10000, 24, 'sha256');
-
 
 // POST /api/users/token
 router.post('/token', function(req, res, next) {
@@ -43,22 +38,12 @@ router.post('/token', function(req, res, next) {
         is_admin: user.is_admin
       });
 
-      // get random bytes for the IV
-      crypto.randomBytes(16, function(err, iv) {
+      cryptoHelper.signAndEncrypt(access_token_payload, function(err, access_token) {
         if (err) {
           res.status(503);
           res.json({error: 'service temporarily unavailable'});
           return;
         }
-        // encrypt the payload
-        var cypher = crypto.createCipheriv('AES192', encrypt_key, iv);
-        var buf = cypher.update(access_token_payload, 'ascii');
-        var buf = Buffer.concat([buf, cypher.final()]);
-        var encrypted = buf.toString('base64') + '|' + iv.toString('base64');
-        var hmac = crypto.createHmac('sha256', hmac_key)
-                   .update(encrypted)
-                   .digest('base64');
-        var access_token = encrypted + '|' + hmac;
         var refresh_token = {
           id: uuid.v4(),
           user_id: user.id
@@ -82,5 +67,22 @@ router.post('/token', function(req, res, next) {
 
 });
 
+
+// GET /me
+router.get('/me', helper.require_login_json);
+router.get('/me', function(req, res, next) {
+  req.models.user.find({id: req.user_id}, function(err, results) {
+    if (err || results.length !== 1)
+      return next('Error fetching user');
+
+    var user = results[0];
+    res.json({
+      user_id: user.id,
+      username: user.username,
+      email: user.email,
+      is_admin: user.is_admin
+    });
+  });
+});
 
 module.exports = router;

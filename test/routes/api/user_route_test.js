@@ -3,7 +3,7 @@ var db = h.db;
 var app = h.app;
 var expect = require('expect');
 var request = require('supertest');
-var crypto = require('crypto');
+var cryptoHelper = require('../../../lib/crypto_helper');
 var moment = require('moment');
 
 
@@ -121,24 +121,20 @@ describe('/api/users', function() {
                 if(err) throw err;
                 expect(result.length).toEqual(1);
                 expect(result[0].id).toEqual(res.body.refresh_token);
-                // make sure the access token decrypts to the right value
-                var components = res.body.access_token.split('|');
-                var payload = components[0];
-                var iv = components[1];
-                var hmac = components[2];
-                // make sure hmac matches
-                expect(getHmacFor(payload + '|' + iv)).toEqual(hmac);
-                // decrypt the payload and make sure it says things
-                var payload = decryptPayload(payload, new Buffer(iv, 'base64'));
-                expect(payload).toExist();
-                expect(payload.user_id).toEqual(user.id);
-                expect(payload.is_admin).toEqual(false);
-                expect(payload.expiry).toExist();
-                // expect an expiry in 6 hours
-                var expected_expiry = +moment().add(6, 'hours');
-                // no more than a 0.1s difference in expectation, ty
-                expect(Math.abs(expected_expiry - moment(payload.expiry))).toBeLessThan(100);
-                done();
+                // check the payload
+                cryptoHelper.decryptAndCheckSig(res.body.access_token, function(err, payload) {
+                  if (err) throw err;
+
+                  expect(payload).toExist();
+                  expect(payload.user_id).toEqual(user.id);
+                  expect(payload.is_admin).toEqual(false);
+                  expect(payload.expiry).toExist();
+                  // expect an expiry in 6 hours
+                  var expected_expiry = +moment().add(6, 'hours');
+                  // no more than a 0.1s difference in expectation, ty
+                  expect(Math.abs(expected_expiry - moment(payload.expiry))).toBeLessThan(100);
+                  done();
+                });
               });
             });
         });
@@ -169,23 +165,4 @@ function make_user(cb) {
       cb(u);
     });
   });
-}
-
-// ugh, these are just copy-pasted from /routes/api/users.js for now,
-// TODO make these nicer?
-var private_key = process.env.PRIVATE_KEY || 'xoCyO5omMAg5BYMrGta3c5aTYs8i6rHSqDr5uoXhl5d9N22j3wuXjI30mCZW';
-var hmac_key = crypto.pbkdf2Sync(private_key, 'hmac', 10000, 128, 'sha256').toString('hex');
-var encrypt_key = crypto.pbkdf2Sync(private_key, 'encrypt_key', 10000, 24, 'sha256');
-
-function getHmacFor(s) {
-  var hmac = crypto.createHmac('sha256', hmac_key);
-  hmac.update(s);
-  return hmac.digest('base64');
-}
-
-
-function decryptPayload(s, iv) {
-  var decipher = crypto.createDecipheriv('AES192', encrypt_key, iv);
-  var ret = decipher.update(s, 'base64', 'ascii');
-  return JSON.parse(ret + decipher.final('ascii'));
 }

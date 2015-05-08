@@ -80,7 +80,7 @@ describe('/api/headcount', function() {
           if (err) throw err;
           expect(res.status).toEqual(400);
           expect(res.body).toEqual({
-            message: 'Parameters missing'
+            error: 'Parameters missing'
           });
           done();
         });
