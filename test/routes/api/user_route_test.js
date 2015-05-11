@@ -143,6 +143,68 @@ describe('/api/users', function() {
 
   });
 
+  describe('GET /me', function() {
+
+    beforeEach('remove all users', function(done) {
+      db.driver.execQuery('TRUNCATE TABLE "user" CASCADE', function(err) {
+        if (err) throw err;
+        done();
+      });
+    });
+
+    it('returns 404 when the user is not found', function(done) {
+      var date = moment().add(6, 'hours').toISOString();
+      cryptoHelper.signAndEncrypt({user_id: 102, is_admin: true, expiry: date},
+        function(err, s) {
+          if (err) throw err;
+          request(app)
+            .get('/api/users/me')
+            .set('Authorization', 'Bearer ' + s)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .end(function(err, res) {
+              if (err) throw err;
+              expect(res.status).toEqual(404);
+              expect(res.body).toEqual({error: 'Not Found'});
+              done();
+            });
+        });
+    });
+
+    it('returns the user_id, username, is_admin', function(done) {
+      var u = new db.models.user({
+        username: 'foobar',
+        is_admin: true
+      });
+      db.models.user.create(u, function(err, res) {
+        if (err) throw err;
+
+        var date = moment().add(6, 'hours').toISOString();
+        cryptoHelper.signAndEncrypt({user_id: u.id, is_admin: u.is_admin, expiry: date},
+          function(err, s) {
+            if (err) throw err;
+
+            request(app)
+              .get('/api/users/me')
+              .set('Authorization', 'Bearer ' + s)
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .end(function(err, res) {
+                if (err) throw err;
+
+                expect(res.body).toEqual({
+                  user_id: u.id,
+                  username: u.username,
+                  is_admin: u.is_admin
+                });
+                done();
+              });
+          });
+      });
+    });
+
+  });
+
 });
 
 var guidRegex = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/i;

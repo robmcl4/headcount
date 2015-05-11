@@ -72,14 +72,19 @@ router.post('/token', function(req, res, next) {
 router.get('/me', helper.require_login_json);
 router.get('/me', function(req, res, next) {
   req.models.user.find({id: req.user_id}, function(err, results) {
-    if (err || results.length !== 1)
+    if (err) {
+      res.status(500);
       return next('Error fetching user');
+    }
+    if (results.length !== 1) {
+      res.status(404);
+      return res.json({error: 'Not Found'});
+    }
 
     var user = results[0];
     res.json({
       user_id: user.id,
       username: user.username,
-      email: user.email,
       is_admin: user.is_admin
     });
   });
