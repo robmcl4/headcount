@@ -10,7 +10,7 @@ var conString = process.env.DATABASE_URL ||
                 '?pool=true?timezone=UTC';
 
 var testConString = null;
-if (process.env.TEST_DATABASE_URL || process.env.TEST_PSQL_USER) {
+if (process.env.TEST_DATABASE_URL || process.env.PSQL_TEST_USER) {
   testConString = process.env.TEST_DATABASE_URL ||
                   ('postgresql://'            +
                   process.env.PSQL_TEST_USER + ':' +
@@ -22,30 +22,38 @@ if (process.env.TEST_DATABASE_URL || process.env.TEST_PSQL_USER) {
 
 
 exports.doQuery = function doQuery(str, success, failure) {
-  var handler = function(err, client, done) {
-    if (err) {
-      done();
-      console.error('ERROR in connection');
-      console.error(err);
-      if (failure)
-        failure(err);
-      return;
-    }
-    client.query(str, function(err, result) {
-      done();
+  var handler = function(success) {
+    return function(err, client, done) {
       if (err) {
-        console.error('ERROR in migration');
+        done();
+        console.error('ERROR in connection');
         console.error(err);
         if (failure)
           failure(err);
         return;
       }
-      success();
-    });
+      client.query(str, function(err, result) {
+        done();
+        if (err) {
+          console.error('ERROR in migration');
+          console.error(err);
+          if (failure)
+            failure(err);
+          return;
+        }
+        success();
+      });
+    }
   };
 
-  pg.connect(conString, handler);
-  if (testConString) {
-    pg.connect(testConString, handler);
-  }
+  pg.connect(conString,
+    handler(function() {
+      if (testConString) {
+        pg.connect(testConString, handler(success));
+      }
+      else {
+        success();
+      }
+    })
+  );
 }
