@@ -22,5 +22,10 @@ block content
             a(href='/api/headcount/headcount.csv')
               span(class='glyphicon glyphicon-download')
               span  Download CSV
+        ul(class='navbar-nav nav navbar-right')
+          li(ng-if="user")
+            a {{ user.username }}
+          li(ng-if="!user")
+            a(href='#/sign_in') Login
   div(class='container')
     div(ng-view)
