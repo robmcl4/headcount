@@ -137,49 +137,23 @@ headcountControllers.directive('datetimePickerRounded', function () {
 });
 
 
-headcountControllers.controller('headcountSignIn', ['$scope', '$http', '$location',
-  function($scope, $http, $location) {
+headcountControllers.controller('headcountSignIn', ['$scope', '$location', 'user',
+  function($scope, $location, user) {
     $scope.username = '';
     $scope.password = '';
+    $scope.message = null;
     $scope.submit = function() {
-      $http({
-        method: 'POST',
-        url: '/api/users/token',
-        data: {
-          username: $scope.username,
-          password: $scope.password,
-          grant_type: 'password'
-        }
-      })
-      .success(function(data, status) {
-        var user = {
-          access_token: data.access_token,
-          refresh_token: data.refresh_token
-        }
-        $http({
-          method: 'GET',
-          url: '/api/users/me',
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + data.access_token
-          }
+      user.login($scope.username, $scope.password)
+        .success(function() {
+          user.getUser()
+            .success(function(u) {
+              $scope.$parent.user = u;
+              $location.path('/');
+            })
         })
-        .success(function(data, status) {
-          $scope.$parent.user = {
-            user_id: data.user_id,
-            username: data.username,
-            is_admin: data.is_admin
-          }
-          user.user_id = data.user_id;
-          user.username = data.username;
-          user.is_admin = data.is_admin;
-          localStorage.user = JSON.stringify(user);
-          $location.path('/');
-        })
-        .error(function(data, status) {
-          delete localStorage.user;
+        .failure(function() {
+          $scope.message = 'Incorrect username or password';
         });
-      });
     }
   }
 ]);
