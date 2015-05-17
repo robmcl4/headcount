@@ -5,6 +5,7 @@ var expect = require('expect');
 var request = require('supertest');
 var cryptoHelper = require('../../../lib/crypto_helper');
 var moment = require('moment');
+var uuid = require('node-uuid');
 
 
 describe('/api/users', function() {
@@ -199,6 +200,89 @@ describe('/api/users', function() {
                 });
                 done();
               });
+          });
+      });
+    });
+
+  });
+
+  describe('DELETE /revoke_refresh_token', function() {
+
+    var user = null;
+    var user_bearer_token = null;
+
+    before('make a user', function(done) {
+      db.driver.execQuery('TRUNCATE TABLE "user" CASCADE', function(err) {
+        if (err) throw err;
+        user = new db.models.user({
+          username: 'foobar',
+          is_admin: false
+        });
+        user.setPassword('password', function(err) {
+          if (err) throw err;
+          db.models.user.create(user, function(err) {
+            if (err) throw err;
+            var expiry = moment().add(6, 'hours').toISOString();
+            cryptoHelper.signAndEncrypt({user_id: user.id, is_admin: user.is_admin, expiry: expiry},
+              function(err, s) {
+                if (err) throw err;
+                user_bearer_token = s;
+                done();
+              }
+            );
+          });
+        });
+      });
+    });
+
+    it('gives 400 a refresh_token is not supplied', function(done) {
+      request(app)
+        .delete('/api/users/revoke_refresh_token')
+        .set('Authorization', 'Bearer ' + user_bearer_token)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) throw err;
+          expect(res.status).toEqual(400);
+          done();
+        });
+    });
+
+    it('gives 404 when a user does not own the refresh token', function(done) {
+      request(app)
+        .delete('/api/users/revoke_refresh_token')
+        .set('Authorization', 'Bearer ' + user_bearer_token)
+        .send({refresh_token: 'thisisnotatoken'})
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) throw err;
+          expect(res.status).toEqual(404);
+          done();
+        });
+    });
+
+    it('removes the refresh token when one exists', function(done) {
+      var rr_tok = new db.models.refresh_token({
+        id: uuid.v4(),
+        user_id: user.id
+      });
+      db.models.refresh_token.create(rr_tok, function(err, res) {
+        if (err) throw err;
+        request(app)
+          .delete('/api/users/revoke_refresh_token')
+          .set('Authorization', 'Bearer ' + user_bearer_token)
+          .send({refresh_token: rr_tok.id})
+          .expect('Content-Type', /json/)
+          .end(function(err, res) {
+            if (err) throw err;
+            expect(res.status).toEqual(200);
+            expect(res.body).toEqual({});
+            // make sure it deleted
+            db.models.refresh_token.find({id: rr_tok.id}, function(err, res) {
+              if (err) throw err;
+              expect(res.length).toEqual(0);
+              done();
+            });
           });
       });
     });

@@ -90,4 +90,41 @@ router.get('/me', function(req, res, next) {
   });
 });
 
+
+// DELETE /revoke_refresh_token
+router.delete('/revoke_refresh_token', helper.require_login_json);
+router.delete('/revoke_refresh_token', function(req, res, next) {
+  var rf_tok = req.body.refresh_token;
+  if (!rf_tok) {
+    res.status(400);
+    return next('Bad Request');
+  }
+  req.models.refresh_token.find({id: rf_tok, user_id: req.user_id}, function(err, results) {
+    if (err) {
+      // if they just provided an invalid uuid, just act like 404
+      if (err.routine.match(/string_to_uuid/)) {
+        results = [];
+      }
+      else {
+        res.status(500);
+        return next('Error fetching refresh token');
+      }
+    }
+    if (results.length !== 1) {
+      res.status(404);
+      return next('Not Found');
+    }
+
+    results[0].remove(function(err, _) {
+      if (err) {
+        res.status(500);
+        return next('Error removing refresh token');
+      }
+      res.json({});
+    });
+
+  });
+});
+
+
 module.exports = router;
