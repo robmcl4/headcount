@@ -35,4 +35,8 @@ headcountApp.run(['$rootScope', 'user', function($rootScope, user) {
     .failure(function(err) {
       $rootScope.user = null;
     });
+  $rootScope.logout = function() {
+    $rootScope.user = null;
+    user.logout();
+  }
 }]);

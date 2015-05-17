@@ -71,6 +71,12 @@ services.factory('user', ['$http', function($http) {
           });
         }
       }
+    },
+
+    logout: function() {
+      delete localStorage.user;
+      return {success: function(cb) {cb();},
+              failure: function() {}};
     }
   }
 }]);
