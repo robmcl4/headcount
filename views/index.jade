@@ -24,10 +24,10 @@ block content
               span  Download CSV
         ul(class='navbar-nav nav navbar-right')
           li(ng-if="user", class="dropdown")
-            <a class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded="false">{{ user.username }} <span class="caret"></span></a>
+            <a class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded="false"><span class="glyphicon glyphicon-user"></span> {{ user.username }} <span class="caret"></span></a>
             ul(class="dropdown-menu", role="menu")
-              <li><a ng-click="logout()">Logout</a></li>
+              <li><a ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
           li(ng-if="!user")
-            a(href='#/sign_in') Login
+            a(href='#/sign_in') <span class="glyphicon glyphicon-log-in"></span> Login
   div(class='container')
     div(ng-view)

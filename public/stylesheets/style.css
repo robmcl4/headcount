@@ -55,6 +55,14 @@ a:hover, a:focus {
   color: #007241;
 }
 
+[ng-click] {
+  cursor: pointer;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+}
+
 #nprogress .bar {
   background: #36D792;
 }
