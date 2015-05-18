@@ -94,8 +94,10 @@ router.get('/me', function(req, res, next) {
 // DELETE /revoke_refresh_token
 router.delete('/revoke_refresh_token', helper.require_login_json);
 router.delete('/revoke_refresh_token', function(req, res, next) {
+  console.log(req.body);
   var rf_tok = req.body.refresh_token;
   if (!rf_tok) {
+    console.log('no tok');
     res.status(400);
     return next('Bad Request');
   }
