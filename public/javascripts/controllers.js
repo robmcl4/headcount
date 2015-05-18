@@ -31,35 +31,29 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
       initials: $scope.initials,
       how_many: $scope.how_many
     };
-    var start = +(new Date());
 
     function done() {
-      var end = +(new Date());
-      setTimeout(function () {
-        $scope.$apply(function () {
-          $scope.headcounts.unshift({
-            ts: moment(msg.ts),
-            initials: msg.initials,
-            how_many: msg.how_many
-          });
-          $scope.headcounts.sort(function(a, b) {return b.ts - a.ts;});
-          if ($scope.headcounts.length > recentCountLimit) {
-            $scope.headcounts.pop();
-          }
-          $scope.submitting = false;
-        });
-      }, Math.max(end - start, 1000));
+      $scope.headcounts.unshift({
+        ts: moment(msg.ts),
+        initials: msg.initials,
+        how_many: msg.how_many
+      });
+      $scope.headcounts.sort(function(a, b) {return b.ts - a.ts;});
+      if ($scope.headcounts.length > recentCountLimit) {
+        $scope.headcounts.pop();
+      }
+      NProgress.done();
+      $scope.submitting = false;
     }
 
+    NProgress.start();
     $http.post('/api/headcount', msg)
-      .success(function () {
-        done();
-      })
+      .success(done)
       .error(function (data, status) {
         console.error('Error occurred in submitting headcount');
         console.error(data);
         console.error(status);
-        done();
+        NProgress.done();
       });
   }
 
@@ -70,13 +64,17 @@ headcountControllers.controller('headcountCharts',
     $scope.whichDay = 1;
 
     $scope.updateDailySummary = function updateDailySummary(whichDay) {
+      NProgress.start();
       $http.get('/api/headcount/day_summary?day=' + whichDay)
         .success(function (data, status) {
-          charts.drawDailyGraph(data, '#daily-graph');
+          NProgress.done(function() {
+            charts.drawDailyGraph(data, '#daily-graph');
+          });
         })
         .error(function (data, success) {
           console.error('Error occurred in getting summary data');
           console.error(data);
+          NProgress.done();
         });
     };
 
@@ -143,16 +141,20 @@ headcountControllers.controller('headcountSignIn', ['$scope', '$location', 'user
     $scope.password = '';
     $scope.message = null;
     $scope.submit = function() {
+      NProgress.start();
       user.login($scope.username, $scope.password)
         .success(function() {
           user.getUser()
             .success(function(u) {
-              $scope.$parent.user = u;
-              $location.path('/');
-            })
+              NProgress.done(function() {
+                $scope.$parent.user = u;
+                $location.path('/');
+              });
+            });
         })
         .failure(function() {
           $scope.message = 'Incorrect username or password';
+          NProgress.done();
         });
     }
   }

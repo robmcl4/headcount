@@ -76,6 +76,7 @@ services.factory('user', ['$http', function($http) {
         req.error(function(data, status) {
           cb();
         });
+        return this;
       }
     }
   };
@@ -84,16 +85,16 @@ services.factory('user', ['$http', function($http) {
     var user = storedUser();
     // if we're not logged in anyway, ignore...
     if (!user) {
-      return {success: function(cb) {cb();},
-              failure: function() {}};
+      return {success: function(cb) {cb();return this;},
+              failure: function() {return this;}};
     }
 
     delete localStorage.user;
 
     // if we don't have a refresh token, just delete our user (above) and move on
     if (!user.refresh_token) {
-      return {success: function(cb) {cb();},
-              failure: function() {}};
+      return {success: function(cb) {cb();return this;},
+              failure: function() {return this;}};
     }
 
     // if we have a refresh token, try to remove it
@@ -114,11 +115,13 @@ services.factory('user', ['$http', function($http) {
         req.success(function(data, status) {
           cb();
         });
+        return this;
       },
       failure: function(cb) {
-        req.failure(function(data, status) {
+        req.error(function(data, status) {
           cb('Failed to remove refresh token');
         });
+        return this;
       }
     }
 
