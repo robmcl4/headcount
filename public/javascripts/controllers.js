@@ -89,6 +89,33 @@ headcountControllers.controller('headcountCharts',
   }
   ]);
 
+
+headcountControllers.controller('headcountSignIn', ['$scope', '$location', 'user',
+  function($scope, $location, user) {
+    $scope.username = '';
+    $scope.password = '';
+    $scope.message = null;
+    $scope.submit = function() {
+      NProgress.start();
+      user.login($scope.username, $scope.password)
+        .success(function() {
+          user.getUser()
+            .success(function(u) {
+              NProgress.done(function() {
+                $scope.$parent.user = u;
+                $location.path('/');
+              });
+            });
+        })
+        .failure(function() {
+          $scope.message = 'Incorrect username or password';
+          NProgress.done();
+        });
+    }
+  }
+]);
+
+
 headcountControllers.directive('datetimePickerRounded', function () {
   return {
     restrict: 'E',
@@ -135,27 +162,13 @@ headcountControllers.directive('datetimePickerRounded', function () {
 });
 
 
-headcountControllers.controller('headcountSignIn', ['$scope', '$location', 'user',
-  function($scope, $location, user) {
-    $scope.username = '';
-    $scope.password = '';
-    $scope.message = null;
-    $scope.submit = function() {
-      NProgress.start();
-      user.login($scope.username, $scope.password)
-        .success(function() {
-          user.getUser()
-            .success(function(u) {
-              NProgress.done(function() {
-                $scope.$parent.user = u;
-                $location.path('/');
-              });
-            });
-        })
-        .failure(function() {
-          $scope.message = 'Incorrect username or password';
-          NProgress.done();
-        });
+headcountControllers.directive('autofocus', ['$timeout', function($timeout) {
+  return {
+    restrict: 'A',
+    link : function($scope, $element) {
+      $timeout(function() {
+        $element[0].focus();
+      });
     }
   }
-]);
+}]);
