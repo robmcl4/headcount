@@ -4,7 +4,7 @@ node_js:
 addons:
     postgresql: "9.3"
 before_script:
-    - psql -c 'create database headcount_test; alter user postgres with password \'password\'' -U postgres
+    - psql -c 'create database headcount_test; alter user postgres with password \\'password\\'' -U postgres
     - bower install
     - npm install -g mocha migrate
     - migrate
