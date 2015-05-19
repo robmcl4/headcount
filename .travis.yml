@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+	- "0.12"
+addons:
+	- postgresql: "9.3"
+before_script:
+	- psql -c 'create database headcount_test' -U postgres
+env: TEST_DATABASE_URL="pg://postgres@/tmp/.s.PGSQL.5432"
