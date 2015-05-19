@@ -1,5 +1,7 @@
 # Headcount
 
+[![Build Status](https://travis-ci.org/robmcl4/headcount.svg?branch=master)](https://travis-ci.org/robmcl4/headcount)
+
 A simple tool for keeping a headcount of a room. Also includes graphs
 displaying average room occupancy.
 
