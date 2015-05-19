@@ -4,8 +4,8 @@ node_js:
 addons:
     postgresql: "9.3"
 before_script:
-    - psql -c 'create database headcount_test' -U postgres
+    - psql -c 'create database headcount_test; alter user postgres with password \'password\'' -U postgres
     - bower install
     - npm install -g mocha migrate
     - migrate
-env: TEST_DATABASE_URL="pg://postgres@/tmp/.s.PGSQL.5432"
+env: TEST_DATABASE_URL="pg://postgres:postgres@localhost/headcount_test"
