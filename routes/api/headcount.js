@@ -6,20 +6,42 @@ var router = express.Router();
 /* GET /api/headcount/recent */
 router.get('/recent', function(req, res, next) {
   var limit = Math.max(Math.min(parseInt(req.query.limit) || 25, 25), 1);
-  req.models.headcount.find(['-ts', '-id'], limit, function(err, headcounts) {
-    if (err)
-      next(err);
-    else {
-      headcounts = headcounts.map(function(e) {
-        return {
-          id: e.id,
-          initials: e.initials,
-          how_many: e.how_many,
-          ts: moment(e.ts).format('YYYY-MM-DDTHH:mm')
-        }
-      });
-      res.json(headcounts);
+  // first count how many total headcounts there are
+  req.models.headcount.count(function(err, count) {
+    if (err) {
+      res.status(500);
+      next('Internal Server Error');
     }
+
+    var total_pages = Math.floor(count/limit);
+    var page = Math.max(
+                Math.min(parseInt(req.query.page) || 0, total_pages),
+                0
+              );
+    var offset = limit*page;
+
+    req.models.headcount.find({}, {offset: offset}, limit, ['-ts', '-id'], function(err, headcounts) {
+      if (err) {
+        res.status(500);
+        next('Internal Server Error');
+        console.log(err);
+      }
+      else {
+        headcounts = headcounts.map(function(e) {
+          return {
+            id: e.id,
+            initials: e.initials,
+            how_many: e.how_many,
+            ts: moment(e.ts).format('YYYY-MM-DDTHH:mm')
+          }
+        });
+        res.json({
+          headcounts: headcounts,
+          page: page,
+          total_pages: Math.ceil(count/limit)
+        });
+      }
+    });    
   });
 });
 

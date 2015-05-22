@@ -9,6 +9,20 @@ describe('/api/headcount', function() {
 
   describe('/recent', function() {
 
+    // function to make a ton of headcounts
+    function makeHeadcounts(numLeft, cb) {
+      if (numLeft <= 0) return cb();
+      var hc = {
+        initials: 'FO',
+        ts: moment().add(Math.round(Math.random()*5), 'hours').toDate(),
+        how_many: 20
+      };
+      db.models.headcount.create(hc, function(err, res) {
+        if (err) throw err;
+        return makeHeadcounts(numLeft-1, cb);
+      });
+    }
+
     beforeEach('remove all old headcounts', function(done) {
       h.clearModel(db.models.headcount, function(err) {
         if (err) throw err;
@@ -22,7 +36,11 @@ describe('/api/headcount', function() {
         .expect('Content-Type', /json/)
         .end(function(err, res) {
           if (err) throw err;
-          expect(res.body).toEqual([]);
+          expect(res.body).toEqual({
+            headcounts: [],
+            page: 0,
+            total_pages: 0
+          });
           done();
         });
     });
@@ -40,24 +58,120 @@ describe('/api/headcount', function() {
           .expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) throw err;
-            expect(res.body).toEqual([{
+            expect(res.body.headcounts).toEqual([{
               id: h.id,
               initials: 'FO',
               how_many: 20,
               ts: moment(h.ts).format('YYYY-MM-DDTHH:mm')
             }]);
+            expect(res.body.total_pages).toEqual(1);
+            expect(res.body.page).toEqual(0);
             done();
-          });        
+          });
       });
     });
 
-    it('should return a list sorted by ts, then by id (greatest to least)');
+    it('should return a list sorted by ts, then by id (greatest to least)', function(done) {
+      makeHeadcounts(25, function() {
+        request(app)
+          .get('/api/headcount/recent')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .end(function(err, res) {
+            if (err) throw err;
+            expect(res.body.headcounts.length).toBeGreaterThan(10);
+            for(var i=0; i<res.body.headcounts.length-1; i++) {
+              var curr = res.body.headcounts[i];
+              var next = res.body.headcounts[i+1];
+              // the date closer to the front should be the same as, or after
+              // the one closer to the end of the list
+              expect(moment(curr.ts).isBefore(next.ts)).toNotEqual(true);
+              if (moment(curr.ts).isSame(next.ts)) {
+                expect(curr.id).toBeGreaterThan(next.id);
+              }
+            }
+            done();
+          });
+      });
+    });
 
-    it('should limit to 25 headcounts if no limit supplied');
+    it('should limit to 25 headcounts if no limit supplied', function(done) {
+      makeHeadcounts(26, function() {
+        request(app)
+          .get('/api/headcount/recent')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .end(function(err, res) {
+            if (err) throw err;
+            expect(res.body.headcounts.length).toEqual(25);
+            expect(res.body.total_pages).toEqual(2);
+            expect(res.body.page).toEqual(0);
+            done();
+          });
+      });
+    });
 
-    it('should limit to 25 headcounts if limit supplied is above 25');
+    it('should limit to 25 headcounts if limit supplied is above 25', function(done) {
+      makeHeadcounts(26, function() {
+        request(app)
+          .get('/api/headcount/recent')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .end(function(err, res) {
+            if (err) throw err;
+            expect(res.body.headcounts.length).toEqual(25);
+            expect(res.body.total_pages).toEqual(2);
+            expect(res.body.page).toEqual(0);
+            done();
+          });
+      });
+    });
 
-    it('should limit to the supplied limit when supplied');
+    it('should limit to the supplied limit when supplied', function(done) {
+      makeHeadcounts(10, function() {
+        request(app)
+          .get('/api/headcount/recent?limit=4')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .end(function(err, res) {
+            if (err) throw err;
+            expect(res.body.headcounts.length).toEqual(4);
+            expect(res.body.total_pages).toEqual(3);
+            expect(res.body.page).toEqual(0);
+            done();
+          });
+      });
+    });
+
+    it('accepts a page number', function(done) {
+      makeHeadcounts(10, function() {
+        request(app)
+          .get('/api/headcount/recent?limit=4&offset=0')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .end(function(err, res1) {
+            if (err) throw err;
+            request(app)
+              .get('/api/headcount/recent?limit=4&page=1')
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .end(function(err, res2) {
+                if (err) throw err;
+                expect(res2.body.headcounts.length).toEqual(4);
+                expect(res2.body.page).toEqual(1);
+                expect(res2.body.total_pages).toEqual(3);
+                // expect none of res1 and res2 ids to overlap
+                for (var i = 0; i<res1.body.headcounts.length; i++) {
+                  for (var j = 0; j<res2.body.headcounts.length; j++) {
+                    expect(res1.body.headcounts[i].id)
+                      .toNotEqual(res2.body.headcounts[j].id);
+                  }
+                }
+                done();
+              });
+          });
+      });
+    });
 
   });
 
@@ -66,7 +180,12 @@ describe('/api/headcount', function() {
     beforeEach('remove all old headcounts', function(done) {
       h.clearModel(db.models.headcount, function(err) {
         if (err) throw err;
-        done();
+        db.models.headcount.count(function(err, c) {
+          if (err) throw err;
+          if (c) throw new Error(c + ' models still exist');
+          done();
+        });
+        // done();
       })
     });
 
