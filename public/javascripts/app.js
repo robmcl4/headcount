@@ -30,7 +30,7 @@ headcountApp.run(['$rootScope', 'user', function($rootScope, user) {
 
   // patch NProgress so it trickles for a minimum amt of time
   (function() {
-    var minNP = 300; // in ms
+    var minNP = 80; // in ms
     var oldStart = NProgress.start;
     var oldDone = NProgress.done;
 

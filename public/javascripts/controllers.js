@@ -3,21 +3,36 @@ var headcountControllers = angular.module('headcountControllers', []);
 
 headcountControllers.controller('headcountMainPage', ['$scope', '$http', function ($scope, $http) {
   var recentCountLimit = 5;
+  var recentCountPageLimit = 5;
 
-  $scope.headcounts = [];
-  NProgress.start();
-  $http({
-    method: 'GET',
-    url: '/api/headcount/recent?limit=' + recentCountLimit,
-  }).success(function (data, status) {
-    data.forEach(function(x) {x.ts = moment(x.ts)});
-    NProgress.done(function() {
-      $scope.headcounts = data;
+  $scope.headcounts = null;
+
+  // get a certain page of recent headcounts
+  $scope.setHeadcountPage = function(n) {
+    NProgress.start();
+    $http({
+      method: 'GET',
+      url: '/api/headcount/recent?limit=' + recentCountLimit + '&page=' + n,
+    }).success(function (data, status) {
+      data.headcounts.forEach(function(x) {x.ts = moment(x.ts)});
+      data.pages = [];
+
+      var firstPage = Math.floor(data.page/recentCountLimit)*recentCountPageLimit+1;
+      var lastPage = Math.min(data.total_pages, firstPage+recentCountPageLimit-1);
+
+      for (var i= firstPage; i<=lastPage; i++) {
+        data.pages.push(i);
+      }
+
+      NProgress.done(function() {
+        $scope.headcounts = data;
+      });
+    }).error(function (data, status) {
+      console.error('Error occurred: ' + data);
+      NProgress.done();
     });
-  }).error(function (data, status) {
-    console.error('Error occurred: ' + data);
-    NProgress.done();
-  });
+  }
+  $scope.setHeadcountPage(0);
 
   var now = moment();
   now.minutes(Math.round(now.minutes() / 30) * 30);
@@ -37,17 +52,19 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
     };
 
     function done() {
-      $scope.headcounts.unshift({
-        ts: moment(msg.ts),
-        initials: msg.initials,
-        how_many: msg.how_many
-      });
-      $scope.headcounts.sort(function(a, b) {return b.ts - a.ts;});
-      if ($scope.headcounts.length > recentCountLimit) {
-        $scope.headcounts.pop();
+      if ($scope.headcounts.page === 0) {
+        $scope.headcounts.headcounts.unshift({
+          ts: moment(msg.ts),
+          initials: msg.initials,
+          how_many: msg.how_many
+        });
+        $scope.headcounts.headcounts.sort(function(a, b) {return b.ts - a.ts;});
+        if ($scope.headcounts.headcounts.length > recentCountLimit) {
+          $scope.headcounts.headcounts.pop();
+        }
+        NProgress.done();
+        $scope.submitting = false;
       }
-      NProgress.done();
-      $scope.submitting = false;
     }
 
     NProgress.start();

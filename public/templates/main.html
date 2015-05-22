@@ -30,35 +30,44 @@
       <div class='form-group'>
         <button type='submit'
                value='Submit'
-               class='btn btn-primary col-md-2 col-sm-2 col-xs-12'>
-          <span ng-hide='submitting'>Submit</span>
-          <div class='spinner' ng-show='submitting'>
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
-          </div>
-        </button>
+               class='btn btn-primary col-md-2 col-sm-2 col-xs-12'
+          >Submit</button>
       </div>
     </form>
   </div>
 </div>
 <h3>Recent Headcounts</h3>
 <hr />
-<table class='table table-striped'>
-  <thead>
-    <tr>
-      <th>Date / Time</th>
-      <th>Initials</th>
-      <th>Count</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat='headcount in headcounts'>
-      <td>{{headcount.ts.format('M/D/YYYY h:mm A')}}</td>
-      <td>{{headcount.initials}}</td>
-      <td>{{headcount.how_many}}</td>
-    </tr>
-  </tbody>
-</table>
+<div ng-if="headcounts">
+  <table class='table table-striped'>
+    <thead>
+      <tr>
+        <th>Date / Time</th>
+        <th>Initials</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat='headcount in headcounts.headcounts'>
+        <td>{{headcount.ts.format('M/D/YYYY h:mm A')}}</td>
+        <td>{{headcount.initials}}</td>
+        <td>{{headcount.how_many}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="btn-group">
+    <button class="btn btn-default"
+            ng-class="{disabled: headcounts.pages[0] == 1}"
+            ng-click="setHeadcountPage(headcounts.pages[0]-2)"
+    ><span class="glyphicon glyphicon-chevron-left"></span></button>
+    <button ng-repeat="i in headcounts.pages"
+            class="btn btn-default"
+            ng-class="{active: headcounts.page == i-1}"
+            ng-click="setHeadcountPage(i-1)"
+      >{{ i }}</button>
+    <button class="btn btn-default"
+            ng-class="{disabled: headcounts.pages[headcounts.pages.length-1] >= headcounts.total_pages}"
+            ng-click="setHeadcountPage(headcounts.pages[headcounts.pages.length-1]+1)"
+    ><span class="glyphicon glyphicon-chevron-right"></span></button>
+  </div>
+</div>
