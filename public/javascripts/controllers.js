@@ -5,14 +5,18 @@ headcountControllers.controller('headcountMainPage', ['$scope', '$http', functio
   var recentCountLimit = 5;
 
   $scope.headcounts = [];
+  NProgress.start();
   $http({
     method: 'GET',
     url: '/api/headcount/recent?limit=' + recentCountLimit,
   }).success(function (data, status) {
     data.forEach(function(x) {x.ts = moment(x.ts)});
-    $scope.headcounts = data;
+    NProgress.done(function() {
+      $scope.headcounts = data;
+    });
   }).error(function (data, status) {
     console.error('Error occurred: ' + data);
+    NProgress.done();
   });
 
   var now = moment();
